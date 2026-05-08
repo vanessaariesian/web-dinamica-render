@@ -16,19 +16,20 @@ def index():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Creamos una tabla de ejemplo si no existe
+    # Mantenemos esto por si acaso, pero no insertamos nada nuevo
     cur.execute('CREATE TABLE IF NOT EXISTS visitas (id serial PRIMARY KEY, nombre varchar(100));')
     
-    # Insertamos un dato de prueba para ver algo en pantalla
-    cur.execute('INSERT INTO visitas (nombre) VALUES (%s)', ('Angela y Vanessa',))
-    conn.commit()
+    # 1. HEMOS ELIMINADO EL INSERT AUTOMÁTICO (A)
+    # Ahora la web solo leerá lo que tú metas manualmente desde DBeaver.
     
-    # Consultamos los datos
-    cur.execute('SELECT * FROM visitas;')
+    # Consultamos los datos ordenados por ID para que no se desordenen
+    cur.execute('SELECT id, nombre FROM visitas ORDER BY id ASC;')
     filas = cur.fetchall()
     
     cur.close()
     conn.close()
+    
+    # Enviamos los datos al index.html
     return render_template('index.html', visitas=filas)
 
 if __name__ == "__main__":
